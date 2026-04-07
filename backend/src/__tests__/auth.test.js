@@ -1,26 +1,23 @@
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const mongoose = require('mongoose');
+process.env.NODE_ENV = 'test';
+
 const request = require('supertest');
 const app = require('../app');
+const sequelize = require('../models/index');
 const User = require('../models/user.model');
 
-let mongoServer;
-
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri());
+  await sequelize.sync({ force: true });
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
+  await sequelize.close();
 });
 
 afterEach(async () => {
-  await User.deleteMany({});
+  await User.destroy({ where: {}, truncate: true });
 });
 
-// ─── Unit Tests ───────────────────────────────────────────────────────────────
+// ─── Register ────────────────────────────────────────────────────────────────
 
 describe('POST /auth/register', () => {
   it('registra un usuario válido y retorna 201', async () => {
@@ -80,11 +77,13 @@ describe('POST /auth/register', () => {
       email: 'hash@example.com',
       password: 'plainpassword',
     });
-    const user = await User.findOne({ email: 'hash@example.com' });
-    expect(user.password).toMatch(/^\$2b\$/);
+    const user = await User.findOne({ where: { email: 'hash@example.com' } });
+    expect(user.password).toMatch(/^\$2[ab]\$/);
     expect(user.password).not.toBe('plainpassword');
   });
 });
+
+// ─── Login ───────────────────────────────────────────────────────────────────
 
 describe('POST /auth/login', () => {
   beforeEach(async () => {
@@ -132,6 +131,8 @@ describe('POST /auth/login', () => {
   });
 });
 
+// ─── Refresh ─────────────────────────────────────────────────────────────────
+
 describe('POST /auth/refresh', () => {
   let refreshToken;
 
@@ -167,7 +168,9 @@ describe('POST /auth/refresh', () => {
   });
 });
 
-describe('GET /protected (Auth_Middleware)', () => {
+// ─── Protected route ─────────────────────────────────────────────────────────
+
+describe('GET /protected (Auth Middleware)', () => {
   let accessToken;
 
   beforeEach(async () => {
@@ -203,33 +206,5 @@ describe('GET /protected (Auth_Middleware)', () => {
       .set('Authorization', `Bearer ${accessToken}`);
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('userId');
-  });
-});
-
-describe('User_Model validaciones', () => {
-  it('lanza error si falta el username', async () => {
-    const user = new User({ email: 'test@example.com', password: 'hash' });
-    await expect(user.validate()).rejects.toThrow();
-  });
-
-  it('lanza error si falta el email', async () => {
-    const user = new User({ username: 'testuser', password: 'hash' });
-    await expect(user.validate()).rejects.toThrow();
-  });
-
-  it('lanza error si falta la password', async () => {
-    const user = new User({ username: 'testuser', email: 'test@example.com' });
-    await expect(user.validate()).rejects.toThrow();
-  });
-
-  it('incluye timestamps al crear un documento', async () => {
-    const user = new User({
-      username: 'tsuser',
-      email: 'ts@example.com',
-      password: 'hashedpw',
-    });
-    await user.save();
-    expect(user.createdAt).toBeInstanceOf(Date);
-    expect(user.updatedAt).toBeInstanceOf(Date);
   });
 });

@@ -21,7 +21,7 @@ function generateRefreshToken(userId) {
 }
 
 async function createUser(username, email, password) {
-  const existing = await User.findOne({ email: email.toLowerCase().trim() });
+  const existing = await User.findOne({ where: { email: email.toLowerCase().trim() } });
   if (existing) {
     const err = new Error('El email ya está registrado');
     err.status = 409;
@@ -29,13 +29,12 @@ async function createUser(username, email, password) {
   }
 
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-  const user = new User({ username, email, password: hashedPassword });
-  await user.save();
+  const user = await User.create({ username, email, password: hashedPassword });
   return user;
 }
 
 async function loginUser(email, password) {
-  const user = await User.findOne({ email: email.toLowerCase().trim() });
+  const user = await User.findOne({ where: { email: email.toLowerCase().trim() } });
   if (!user) {
     const err = new Error('Credenciales inválidas');
     err.status = 401;
@@ -49,8 +48,8 @@ async function loginUser(email, password) {
     throw err;
   }
 
-  const access_token = generateAccessToken(user._id.toString());
-  const refresh_token = generateRefreshToken(user._id.toString());
+  const access_token = generateAccessToken(user.id.toString());
+  const refresh_token = generateRefreshToken(user.id.toString());
 
   return { access_token, refresh_token };
 }

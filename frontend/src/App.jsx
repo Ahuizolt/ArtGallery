@@ -4,14 +4,11 @@ import { useAuth } from './hooks/useAuth';
 import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
 import Dashboard from './pages/Dashboard';
+import Gallery from './pages/Gallery';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-
+  if (loading) return <div className="loading-screen">Cargando...</div>;
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
@@ -28,7 +25,8 @@ export default function App() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Gallery />} />
+      <Route path="/gallery" element={<Gallery />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/login" element={<LoginForm />} />
       <Route
@@ -39,6 +37,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

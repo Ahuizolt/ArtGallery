@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
+import Feed from './pages/Feed';
 import Dashboard from './pages/Dashboard';
 
 function ProtectedRoute({ children }) {
@@ -13,7 +14,7 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>
@@ -24,9 +25,10 @@ export default function App() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/feed" replace />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/login" element={<LoginForm />} />
+      <Route path="/feed" element={<Feed />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     </Routes>
   );

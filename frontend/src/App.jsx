@@ -25,7 +25,7 @@ export default function App() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Gallery />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/login" element={<LoginForm />} />

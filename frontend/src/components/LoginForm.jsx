@@ -39,7 +39,7 @@ export default function LoginForm() {
     try {
       const data = await apiLogin(form.email, form.password);
       login(data.access_token, data.refresh_token);
-      navigate('/dashboard');
+      navigate('/gallery');
     } catch (err) {
       setError(err.message || 'Error al iniciar sesión');
     } finally {

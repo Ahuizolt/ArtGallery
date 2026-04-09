@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getGallery } from '../services/imageApi';
+import ImageViewer from '../components/ImageViewer';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -10,6 +11,7 @@ export default function Gallery() {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     getGallery()
@@ -62,7 +64,7 @@ export default function Gallery() {
         ) : (
           <div className="masonry-grid">
             {images.map((img) => (
-              <div key={img.id} className="pin-card">
+              <div key={img.id} className="pin-card" onClick={() => setSelected(img)}>
                 <img
                   src={`${API_URL}/uploads/${img.filename}`}
                   alt={img.title || img.original_name}
@@ -77,6 +79,15 @@ export default function Gallery() {
           </div>
         )}
       </main>
+
+      {selected && (
+        <ImageViewer
+          image={selected}
+          allImages={images}
+          onClose={() => setSelected(null)}
+          onSelect={setSelected}
+        />
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { uploadImage, getMyImages, updateImage, deleteImage } from '../services/imageApi';
+import ImageViewer from '../components/ImageViewer';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -12,6 +13,7 @@ export default function Dashboard() {
 
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -133,6 +135,8 @@ export default function Dashboard() {
                   src={`${API_URL}/uploads/${img.filename}`}
                   alt={img.title || img.original_name}
                   loading="lazy"
+                  onClick={() => setSelected(img)}
+                  style={{ cursor: 'pointer' }}
                 />
                 <div className="pin-overlay">
                   {img.title && <p className="pin-title">{img.title}</p>}
@@ -157,6 +161,16 @@ export default function Dashboard() {
 
       {/* FAB flotante */}
       <button className="fab" onClick={openModal} aria-label="Subir imagen">+</button>
+
+      {/* Viewer de imagen */}
+      {selected && (
+        <ImageViewer
+          image={selected}
+          allImages={images}
+          onClose={() => setSelected(null)}
+          onSelect={setSelected}
+        />
+      )}
 
       {/* Modal de subida */}
       {showModal && (

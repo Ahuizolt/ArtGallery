@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { uploadImage, getMyImages, updateImage, deleteImage } from '../services/imageApi';
 import ImageViewer from '../components/ImageViewer';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_URL } from '../config';
 
 export default function Dashboard() {
   const { logout, accessToken } = useAuth();
@@ -130,17 +129,15 @@ export default function Dashboard() {
         ) : (
           <div className="masonry-grid">
             {images.map((img) => (
-              <div key={img.id} className="pin-card pin-card--owned">
+              <div key={img.id} className="pin-card pin-card--owned" onClick={() => setSelected(img)}>
                 <img
                   src={`${API_URL}/uploads/${img.filename}`}
                   alt={img.title || img.original_name}
                   loading="lazy"
-                  onClick={() => setSelected(img)}
-                  style={{ cursor: 'pointer' }}
                 />
                 <div className="pin-overlay">
                   {img.title && <p className="pin-title">{img.title}</p>}
-                  <div className="pin-actions">
+                  <div className="pin-actions" onClick={(e) => e.stopPropagation()}>
                     <button
                       className={`badge-visibility ${img.is_public ? 'badge-visibility--public' : ''}`}
                       onClick={() => togglePublic(img)}

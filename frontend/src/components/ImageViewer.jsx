@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_URL } from '../config';
 
 // Controles internos que usan el contexto de TransformWrapper
 function ZoomControls() {

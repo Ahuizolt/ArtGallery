@@ -75,8 +75,6 @@ async function refreshToken(token) {
 }
 
 module.exports = {
-  generateAccessToken,
-  generateRefreshToken,
   createUser,
   loginUser,
   refreshToken,

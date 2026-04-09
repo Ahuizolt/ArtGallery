@@ -1,10 +1,9 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getGallery } from '../services/imageApi';
 import ImageViewer from '../components/ImageViewer';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_URL } from '../config';
 
 export default function Gallery() {
   const { isAuthenticated, logout } = useAuth();

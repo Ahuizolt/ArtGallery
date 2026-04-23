@@ -8,7 +8,7 @@ async function handleResponse(res) {
   return data;
 }
 
-export async function register(username, email, password) {
+export async function register(username, email, password) { 
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

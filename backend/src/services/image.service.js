@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const Image = require('../models/image.model');
 const User = require('../models/user.model');
+const Tag = require('../models/tag.model');
+require('../models/image_tag.model'); // registra asociación
 
 async function saveImage(userId, file, { title, description, is_public }) {
   const image = await Image.create({
@@ -27,7 +29,10 @@ async function getMyImages(userId) {
 async function getPublicImages() {
   return Image.findAll({
     where: { is_public: true },
-    include: [{ model: User, as: 'owner', attributes: ['username'] }],
+    include: [
+      { model: User, as: 'owner', attributes: ['username'] },
+      { model: Tag, as: 'tags', attributes: ['name'], through: { attributes: [] } },
+    ],
     order: [['createdAt', 'DESC']],
   });
 }
